@@ -42,12 +42,9 @@ export class PokeService {
         }
     }
 
-
-
-    getPokemon(event: any): string {
-        return JSON.stringify({
-            message: 'getPokemon, desde AWS utilizando serverless v1'
-        });
+    async getPokemons() {
+        const getAllPokemon = await DynamoDbActions.getAllItems();
+        return JSON.stringify({  getAllPokemon });
     }
 
 

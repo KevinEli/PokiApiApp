@@ -15,21 +15,23 @@ export const DynamoDbActions = {
   },
 
   async truncateTable() {
+    try {
+      const rows = await documentClient.scan({ TableName: Constants.TableName, AttributesToGet: ['Id'] }).promise();
 
-    const rows = await documentClient.scan({
-      TableName: Constants.TableName,
-      AttributesToGet: ['Id'],
-    }).promise();
-
-    rows.Items?.forEach(async (element) => {
-      await documentClient.delete({
-        TableName: Constants.TableName,
-        Key: element,
-      }).promise();
-    });
+      rows.Items?.forEach(async (element) => {
+        await documentClient.delete({ TableName: Constants.TableName, Key: element }).promise();
+      });
+    }
+    catch (error) {
+      throw new Error(`Error deleting Pokemon Data ${error}`);
+    }
 
   },
-  
+
+  async getAllItems() {
+    return await documentClient.scan({ TableName: Constants.TableName }).promise();
+  },
+
   async get(Id: number, TableName: string) {
     const params = {
       TableName,
