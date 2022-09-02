@@ -1,0 +1,57 @@
+service: pokiapiapp-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: deploy-aws
+  stage: dev
+  region: us-east-2
+
+plugins:
+  - serverless-plugin-typescript 
+  - serverless-offline
+
+custom:
+    tableName: PokemonLocal
+
+functions:
+  sync:
+    handler: src/pokeHandler.sync
+    events:
+      - http:
+          method: get
+          path: /sync
+  pokemon:
+    handler: src/pokeHandler.pokemon
+    events:
+      - http:
+          method: get
+          path: /pokemon
+  pokemonByNameId:
+    handler: src/pokeHandler.pokemonByNameId
+    events:
+      - http:
+          method: get
+          path: /pokemon/{NameId}
+  pokemonType:
+    handler: src/pokeHandler.pokemonType
+    events:
+      - http:
+          method: get
+          path: /pokemonType
+
+resources:
+    Resources:
+        DynamoDbTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.tableName}
+                AttributeDefinitions:
+                    - AttributeName: Id
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: Id
+                      KeyType: HASH
+                BillingMode: PAY_PER_REQUEST

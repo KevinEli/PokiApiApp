@@ -1,0 +1,26 @@
+{
+  "name": "pokiapiapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "sls offline start",
+    "deploy": "sls deploy --stage dev --verbose"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-lambda": "^1.0.7",
+    "aws-sdk": "^2.1206.0",
+    "axios": "^0.27.2",
+    "serverless-plugin-typescript": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.102",
+    "serverless-offline": "^9.3.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2"
+  }
+}
