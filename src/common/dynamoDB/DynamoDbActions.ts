@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 import { Constants } from '../resources/constants'
-
+import { FilterModel } from '../models/filterModel'
 
 const documentClient = new DynamoDB.DocumentClient({ region: 'us-east-2' });
 
@@ -35,7 +35,7 @@ export const DynamoDbActions = {
     return await documentClient.get({ TableName: Constants.TableName, Key: { Id: id } }).promise();
   },
 
-  async getItemByFilter(key: any) {
+  async getItemByFilter(key: FilterModel) {
     let params = {
       TableName: Constants.TableName,
       IndexName: key.indexName,
@@ -56,7 +56,7 @@ export const DynamoDbActions = {
       if (!isNaN(criterial)) {
         return await this.getItemById(criterial)
       } else {
-        const key = { name: 'Name', value: criterial.toString(), indexName :'Name_index' };
+        const key: FilterModel = { name: 'Name', value: criterial.toString(), indexName :'Name_index' };
         return await this.getItemByFilter(key);
       }
 
@@ -64,28 +64,6 @@ export const DynamoDbActions = {
       throw new Error(`Error getting Pokemon Data ${error}`);
     }
   },
-
-
-
-  async write(data: any, TableName: string) {
-    if (!data.ID) {
-      throw Error('no ID on the data');
-    }
-
-    const params = {
-      TableName,
-      Item: data,
-    };
-
-    const res = await documentClient.put(params).promise();
-
-    if (!res) {
-      throw Error(`There was an error inserting ID of ${data.Id} in table ${TableName}`);
-    }
-
-    return data;
-  }
-
 
 }
 

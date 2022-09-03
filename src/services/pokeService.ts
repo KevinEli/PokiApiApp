@@ -5,6 +5,16 @@ import { Constants } from '../common/resources/constants'
 
 export class PokeService {
 
+    private errorMessage: string;
+
+    geterrorMessage() {
+        return this.errorMessage;
+    }
+
+    constructor(  ) {
+        this.errorMessage = '';
+    }
+
     async syncPokemon() {
         try {
             const res = await axios.get(Constants.ExternalUrl.GetPokemon).then(async response => {
@@ -32,7 +42,7 @@ export class PokeService {
                 }
 
             }).catch(error => {
-                throw new Error(`An Error Ocurred syncPokemon: ${error}`);
+                throw new Error(`An Error Ocurred syncPokemon ${error}`);
             });
 
             return res;
@@ -47,11 +57,27 @@ export class PokeService {
         return JSON.stringify({ getAllPokemon });
     }
 
-
     async getPokemonByNameorId(nameId: any) {
         const searchPokemon = await DynamoDbActions.getItemByNameorId(nameId);
         return searchPokemon;
     }
 
+    async getPokemonType(Type: string) {
+        try {
+            this.errorMessage = '';
+            const res = await axios.get(`${Constants.ExternalUrl.GetPokemonType}${Type}`).then(async response => {
+                if (response.data) {
+                    return JSON.stringify(response.data);
+                }
+            }).catch(error => {
+                this.errorMessage = `An Error Ocurred calling Pokemon Type External Url: ${error}`;
+            });
+
+            return res;
+
+        } catch (error) {
+            throw error;
+        }
+    }
 
 }

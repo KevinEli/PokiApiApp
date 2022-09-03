@@ -40,13 +40,16 @@ export const pokemonByNameId: Handler = async (event: any, context: Context, cal
 };
 
 
-export const pokemonType: Handler = (event: any, context: Context, callback: Callback) => {
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify({
-            message: 'pokemonType, desde AWS utilizando serverless'
-        }),
-    };
+export const pokemonType: Handler = async (event: any, context: Context, callback: Callback) => {
+    
+    let pokeService = new PokeService();
+    let result = await pokeService.getPokemonType(event.pathParameters.Type);
+    let errorMsg = pokeService.geterrorMessage();
 
-    return callback(null, response);
+    if ( errorMsg ) return Responses.NotFound({ message: errorMsg });
+    
+    if ( !result ) 
+        return Responses.BadRequest({ message: `No dataType found were found with ${event.pathParameters.Type}` });
+
+    return Responses.OK(result);
 };

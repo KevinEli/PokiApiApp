@@ -18,4 +18,8 @@ export const Responses = {
     BadRequest(data = {}) {
         return this.DefineResponse(400, data);
     },
+
+    NotFound(data = {}) {
+        return this.DefineResponse(404, data);
+    },
 };
