@@ -16,7 +16,7 @@ export class PokeService {
                                     PutRequest: {
                                         Item: {
                                             Id: (index + 1).toString(),
-                                            name: el.name, url: el.url
+                                            Name: el.name, Url: el.url
                                         }
                                     }
                                 };
@@ -31,8 +31,8 @@ export class PokeService {
                     return JSON.stringify(pokemonModels);
                 }
 
-            }).catch(error => { 
-                throw new Error(`An Error Ocurred syncPokemon: ${error}`); 
+            }).catch(error => {
+                throw new Error(`An Error Ocurred syncPokemon: ${error}`);
             });
 
             return res;
@@ -44,20 +44,13 @@ export class PokeService {
 
     async getPokemons() {
         const getAllPokemon = await DynamoDbActions.getAllItems();
-        return JSON.stringify({  getAllPokemon });
+        return JSON.stringify({ getAllPokemon });
     }
 
 
-    async getPokemonById(nameId: any) {
-        const searchPokemon = await DynamoDbActions.get(nameId, "PokemonLocal")
-            .then(data => data.Item)
-            .catch(error => console.log(error));
-
-        const result = JSON.stringify(searchPokemon);
-
-        return JSON.stringify({
-            message: `getPokemon, desde AWS utilizando serverless ${result}`
-        });
+    async getPokemonByNameorId(nameId: any) {
+        const searchPokemon = await DynamoDbActions.getItemByNameorId(nameId);
+        return searchPokemon;
     }
 
 

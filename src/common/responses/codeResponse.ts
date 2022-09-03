@@ -1,5 +1,5 @@
 export const Responses = {
-    _DefineResponse(statusCode = 502, data = {}) {
+    DefineResponse(statusCode = 502, data = {}) {
         return {
             headers: {
                 'Content-Type': 'application/json',
@@ -11,14 +11,11 @@ export const Responses = {
         };
     },
 
-    _200(data = {}) {
-        return this._DefineResponse(200, data);
+    OK(data = {}) {
+        return this.DefineResponse(200, data);
     },
 
-    _400(data = {}) {
-        return this._DefineResponse(400, data);
-    },
-    _404(data = {}) {
-        return this._DefineResponse(404, data);
+    BadRequest(data = {}) {
+        return this.DefineResponse(400, data);
     },
 };

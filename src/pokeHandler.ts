@@ -8,10 +8,10 @@ export const sync: Handler = async (event: any, context: Context, callback: Call
     let result = await pokeService.syncPokemon();
 
     if ( !result ) {
-        return Responses._400({ message: 'Failed to sync external data' });
+        return Responses.BadRequest({ message: 'Failed to sync external data' });
     }
 
-    return Responses._200({ message: "Successfull Sync :)" });
+    return Responses.OK({ message: "Successfull Sync :)" });
 };
 
 
@@ -20,24 +20,25 @@ export const pokemon: Handler = async (event: any, context: Context, callback: C
     let result = await pokeService.getPokemons();
     
     if ( !result ) {
-        return Responses._400({ message: 'No data to show' });
+        return Responses.BadRequest({ message: 'No data to show' });
     }
 
-    return Responses._200({ result });
+    return Responses.OK({ result });
 };
 
 export const pokemonByNameId: Handler = async (event: any, context: Context, callback: Callback) => {
 
     let pokeService = new PokeService();
-    let body = await pokeService.getPokemonById(event.pathParameters.NameId);
+    let criterial = event.pathParameters.NameId;
+    let result = await pokeService.getPokemonByNameorId(criterial);
 
-    const response = {
-        statusCode: 200,
-        body
-    };
+    if ( !result ) {
+        return Responses.BadRequest({ message: `No matching records were found with ${criterial}` });
+    }
 
-    return callback(null, response);
+    return Responses.OK({ result });
 };
+
 
 export const pokemonType: Handler = (event: any, context: Context, callback: Callback) => {
     const response = {

@@ -21,8 +21,7 @@ export const DynamoDbActions = {
       rows.Items?.forEach(async (element) => {
         await documentClient.delete({ TableName: Constants.TableName, Key: element }).promise();
       });
-    }
-    catch (error) {
+    } catch (error) {
       throw new Error(`Error deleting Pokemon Data ${error}`);
     }
 
@@ -32,31 +31,41 @@ export const DynamoDbActions = {
     return await documentClient.scan({ TableName: Constants.TableName }).promise();
   },
 
-  async get(Id: number, TableName: string) {
-    const params = {
-      TableName,
-      Key: {
-        Id,
+  async getItemById(id: string) {
+    return await documentClient.get({ TableName: Constants.TableName, Key: { Id: id } }).promise();
+  },
+
+  async getItemByFilter(key: any) {
+    let params = {
+      TableName: Constants.TableName,
+      IndexName: key.indexName,
+      KeyConditionExpression: '#keyname = :keyvalue',
+      ExpressionAttributeNames: {
+        '#keyname': key.name,
+      },
+      ExpressionAttributeValues: {
+        ':keyvalue': key.value,
       },
     };
-    console.log(Id);
-    console.log(TableName);
-    const data = await documentClient.get(params).promise();
-    /*const data = await documentClient.get(params, function(err, data) {
-      if (err) {
-          console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
-      } else {
-          console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
-      }
-  }).promise();*/
-
-    if (!data || !data.Item) {
-      throw Error(`There was an error fetching the data for ID of ${Id} from ${TableName}`);
-    }
-    console.log(data);
-
-    return data.Item;
+    return await documentClient.query(params).promise();
   },
+
+  async getItemByNameorId(criterial: any) {
+    try {
+
+      if (!isNaN(criterial)) {
+        return await this.getItemById(criterial)
+      } else {
+        const key = { name: 'Name', value: criterial.toString(), indexName :'Name_index' };
+        return await this.getItemByFilter(key);
+      }
+
+    } catch (error) {
+      throw new Error(`Error getting Pokemon Data ${error}`);
+    }
+  },
+
+
 
   async write(data: any, TableName: string) {
     if (!data.ID) {
